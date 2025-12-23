@@ -1,13 +1,34 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from rest_framework import viewsets
 from .models import Note
 from .serializers import NoteSerializer
+import json
 
 class NoteViewSet(viewsets.ModelViewSet):
+    """API ViewSet untuk JSON responses"""
     queryset = Note.objects.all()
     serializer_class = NoteSerializer
+
+
+def note_list_html(request):
+    """Function view untuk HTML rendering"""
+    if request.method == 'POST':
+        # Handle POST request
+        title = request.POST.get('title')
+        content = request.POST.get('content')
+        Note.objects.create(title=title, content=content)
+        return redirect('note-list-html')
     
+    # Get all notes
+    notes = Note.objects.all()
     
-def item_list_view(request):
-    items = Note.objects.all()
-    return render(request, 'crud/index.html', {'items': items})
+    # Serialize data untuk display
+    serializer = NoteSerializer(notes, many=True)
+    data_json = json.dumps(list(serializer.data), indent=4)
+    
+    context = {
+        'notes': notes,
+        'data': data_json,
+    }
+    
+    return render(request, 'notes/note_list.html', context)

@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Django REST framework</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+        .navbar-custom {
+            background-color: #2c3e50;
+            padding: 15px 0;
+        }
+        .navbar-brand {
+            color: #fff !important;
+            font-size: 18px;
+            font-weight: 300;
+        }
+        .navbar-text {
+            color: #fff !important;
+        }
+        .breadcrumb {
+            background-color: #ecf0f1;
+            padding: 12px 20px;
+            margin: 0;
+            border-radius: 0;
+        }
+        .content-wrapper {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .page-header h1 {
+            font-size: 28px;
+            font-weight: 300;
+            margin: 0;
+        }
+        .btn-group-custom .btn {
+            margin-left: 5px;
+        }
+        .info-box {
+            background-color: #fff;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            font-family: 'Courier New', monospace;
+        }
+        .info-box p {
+            margin: 5px 0;
+        }
+        .data-display {
+            background-color: #fff;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        .data-display pre {
+            margin: 0;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 0 0 4px 4px;
+            font-size: 13px;
+            overflow-x: auto;
+        }
+        .nav-tabs-custom {
+            border-bottom: 1px solid #dee2e6;
+            padding: 0 20px;
+            background-color: #fff;
+        }
+        .nav-tabs-custom .nav-link {
+            border: none;
+            color: #c7254e;
+            padding: 10px 15px;
+            font-size: 14px;
+        }
+        .nav-tabs-custom .nav-link.active {
+            border-bottom: 2px solid #c7254e;
+            color: #c7254e;
+        }
+        .form-wrapper {
+            background-color: #fff;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 20px;
+        }
+        .form-wrapper label {
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-custom">
+        <div class="container-fluid" style="max-width: 1400px; margin: 0 auto;">
+            <span class="navbar-brand">Django REST framework 2</span>
+            <span class="navbar-text">admin</span>
+        </div>
+    </nav>
+
+    <!-- Breadcrumb -->
+    <div class="breadcrumb">
+        <div class="container-fluid" style="max-width: 1400px; margin: 0 auto;">
+            Note List
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="content-wrapper">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1>Note List</h1>
+            <div class="btn-group-custom">
+                <button class="btn btn-primary" onclick="showOptions()">OPTIONS</button>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown">
+                        GET
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="?format=json">json</a></li>
+                        <li><a class="dropdown-item" href="?format=api">api</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Request Info -->
+        <div class="info-box">
+            <p><strong>GET</strong> /api/notes/</p>
+            <p><strong>HTTP 200 OK</strong></p>
+            <p>Allow: GET, POST, HEAD, OPTIONS</p>
+            <p>Content-Type: application/json</p>
+            <p>Vary: Accept</p>
+        </div>
+
+        <!-- Data Display -->
+        <div class="data-display">
+            <div class="nav-tabs-custom">
+                <ul class="nav nav-tabs" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" data-bs-toggle="tab" href="#raw-data">Raw data</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-bs-toggle="tab" href="#html-form">HTML form</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="tab-content">
+                <div id="raw-data" class="tab-pane fade show active">
+                    <pre>{{ data|safe }}</pre>
+                </div>
+                <div id="html-form" class="tab-pane fade">
+                    <div style="padding: 20px;">
+                        <p class="text-muted">Use the form below to view data</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- POST Form -->
+        <div class="form-wrapper">
+            <form method="post" action="/api/notes/">
+                {% csrf_token %}
+                <div class="mb-3 row">
+                    <label class="col-sm-2 col-form-label text-end">Title</label>
+                    <div class="col-sm-10">
+                        <input type="text" name="title" class="form-control" required>
+                    </div>
+                </div>
+                <div class="mb-3 row">
+                    <label class="col-sm-2 col-form-label text-end">Content</label>
+                    <div class="col-sm-10">
+                        <textarea name="content" class="form-control" rows="5" required></textarea>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-10 offset-sm-2">
+                        <button type="submit" class="btn btn-primary px-4">POST</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function showOptions() {
+            alert('OPTIONS method shows available HTTP methods for this endpoint:\n\nGET, POST, HEAD, OPTIONS');
+        }
+    </script>
+</body>
+</html>
