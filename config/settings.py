@@ -4,6 +4,7 @@ Django settings for config project - PythonAnywhere Ready
 
 from pathlib import Path
 import os
+import dj_database_url
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -14,10 +15,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-=5n_@jitucjlof!l5b$crv0vx8&omjlth8@lqbmdx%kfc^g0z0')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
 # ALLOWED_HOSTS untuk PythonAnywhere
 ALLOWED_HOSTS = ["*"]
+
+CSRF_TRUSTED_ORIGINS = ['https://crud-deploy-production-82cd.up.railway.app']
 
 # Application definition
 INSTALLED_APPS = [
@@ -75,15 +78,11 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 
 DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': os.environ.get("DB_NAME"),
-            'USER': os.environ.get("DB_USER"),
-            'PASSWORD': os.environ.get("DB_PASSWORD"),
-            'HOST': os.environ.get("DB_HOST"),
-            'PORT': os.environ.get("DB_PORT"),
-        }
-    }
+    'default': dj_database_url.config(
+        default=os.environ.get('DATABASE_URL'),
+        conn_max_age=600
+    )
+}
 
 # if DB_LIVE in ["False", False]:
 
