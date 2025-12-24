@@ -5,20 +5,19 @@ Django settings for config project - PythonAnywhere Ready
 from pathlib import Path
 import os
 
+from dotenv import load_dotenv
+load_dotenv()
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-=5n_@jitucjlof!l5b$crv0vx8&omjlth8@lqbmdx%kfc^g0z0')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 # ALLOWED_HOSTS untuk PythonAnywhere
-ALLOWED_HOSTS = [
-    'localhost',
-    '127.0.0.1',
-    'raflir13.pythonanywhere.com',  # Akan match yourusername.pythonanywhere.com
-]
+ALLOWED_HOSTS = ["*"]
 
 # Application definition
 INSTALLED_APPS = [
@@ -35,6 +34,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     'django.contrib.sessions.middleware.SessionMiddleware',
     # 'corsheaders.middleware.CorsMiddleware',  # Uncomment jika butuh CORS
     'django.middleware.common.CommonMiddleware',
@@ -70,13 +70,30 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
+DB_LIVE = os.getenv("DB_LIVE")
+
 # Database
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+
+if DB_LIVE in ["False", False]:
+
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
     }
-}
+    
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.getenv("DB_NAME"),
+            'USER': os.getenv("DB_USER"),
+            'PASSWORD': os.getenv("DB_PASSWORD"),
+            'HOST': os.getenv("DB_HOST"),
+            'PORT': os.getenv("DB_PORT"),
+        }
+    }
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
@@ -103,7 +120,9 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # PENTING untuk PythonAnywhere
 STATIC_URL = '/static/'
-STATIC_ROOT = BASE_DIR / 'static'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 # Media files
 MEDIA_URL = '/media/'
