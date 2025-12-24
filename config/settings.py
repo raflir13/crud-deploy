@@ -70,7 +70,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
-DB = os.environ.get("DB_LIVE")
+DB_LIVE = os.environ.get("DB_LIVE")
 
 # Database
 
