@@ -17,7 +17,7 @@ def note_list_html(request):
         title = request.POST.get('title')
         content = request.POST.get('content')
         Note.objects.create(title=title, content=content)
-        return redirect('note-list-html')
+        return redirect('home')
     
     # Get all notes
     notes = Note.objects.all()

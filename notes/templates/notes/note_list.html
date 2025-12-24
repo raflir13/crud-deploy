@@ -3,200 +3,493 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Django REST framework</title>
+    <title>Notes Manager - Django REST API</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --success-color: #27ae60;
+            --danger-color: #e74c3c;
+            --warning-color: #f39c12;
+            --light-bg: #ecf0f1;
+        }
+
         body {
-            background-color: #f8f9fa;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-        .navbar-custom {
-            background-color: #2c3e50;
-            padding: 15px 0;
-        }
-        .navbar-brand {
-            color: #fff !important;
-            font-size: 18px;
-            font-weight: 300;
-        }
-        .navbar-text {
-            color: #fff !important;
-        }
-        .breadcrumb {
-            background-color: #ecf0f1;
-            padding: 12px 20px;
-            margin: 0;
-            border-radius: 0;
-        }
-        .content-wrapper {
-            max-width: 1400px;
+
+        .main-container {
+            max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
         }
-        .page-header {
+
+        .header-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .header-section h1 {
+            color: var(--primary-color);
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .header-section p {
+            color: #7f8c8d;
+            margin-bottom: 0;
+        }
+
+        .stats-row {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            flex: 1;
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+        }
+
+        .stat-icon.primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .stat-icon.success { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+        .stat-icon.info { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+
+        .stat-content h3 {
+            margin: 0;
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .stat-content p {
+            margin: 0;
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+
+        .content-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .section-title {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--light-bg);
         }
-        .page-header h1 {
-            font-size: 28px;
-            font-weight: 300;
+
+        .section-title h2 {
             margin: 0;
+            color: var(--primary-color);
+            font-weight: 600;
         }
-        .btn-group-custom .btn {
-            margin-left: 5px;
-        }
-        .info-box {
-            background-color: #fff;
-            border: 1px solid #dee2e6;
-            border-radius: 4px;
-            padding: 15px 20px;
-            margin-bottom: 20px;
-            font-size: 14px;
-            font-family: 'Courier New', monospace;
-        }
-        .info-box p {
-            margin: 5px 0;
-        }
-        .data-display {
-            background-color: #fff;
-            border: 1px solid #dee2e6;
-            border-radius: 4px;
-            margin-bottom: 20px;
-        }
-        .data-display pre {
-            margin: 0;
-            padding: 20px;
-            background-color: #f8f9fa;
-            border-radius: 0 0 4px 4px;
-            font-size: 13px;
-            overflow-x: auto;
-        }
-        .nav-tabs-custom {
-            border-bottom: 1px solid #dee2e6;
-            padding: 0 20px;
-            background-color: #fff;
-        }
-        .nav-tabs-custom .nav-link {
-            border: none;
-            color: #c7254e;
-            padding: 10px 15px;
-            font-size: 14px;
-        }
-        .nav-tabs-custom .nav-link.active {
-            border-bottom: 2px solid #c7254e;
-            color: #c7254e;
-        }
-        .form-wrapper {
-            background-color: #fff;
-            border: 1px solid #dee2e6;
-            border-radius: 4px;
-            padding: 20px;
-        }
-        .form-wrapper label {
+
+        .btn-custom {
+            padding: 10px 25px;
+            border-radius: 8px;
             font-weight: 500;
-            margin-bottom: 5px;
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+        .btn-primary-custom {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+
+        .note-card {
+            background: white;
+            border: 2px solid var(--light-bg);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .note-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            border-color: #667eea;
+        }
+
+        .note-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 15px;
+        }
+
+        .note-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin: 0;
+        }
+
+        .note-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-sm-custom {
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-edit {
+            background: #3498db;
+            color: white;
+        }
+
+        .btn-edit:hover {
+            background: #2980b9;
+            transform: scale(1.05);
+        }
+
+        .btn-delete {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background: #c0392b;
+            transform: scale(1.05);
+        }
+
+        .note-content {
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        .note-meta {
+            font-size: 12px;
+            color: #95a5a6;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .empty-state i {
+            font-size: 64px;
+            color: #bdc3c7;
+            margin-bottom: 20px;
+        }
+
+        .empty-state h3 {
+            color: #7f8c8d;
+            margin-bottom: 10px;
+        }
+
+        .modal-content {
+            border-radius: 15px;
+            border: none;
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px 15px 0 0;
+        }
+
+        .modal-header .btn-close {
+            filter: brightness(0) invert(1);
+        }
+
+        .api-endpoint {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        .api-endpoint strong {
+            color: #3498db;
+        }
+
+        @media (max-width: 768px) {
+            .stats-row {
+                flex-direction: column;
+            }
+            
+            .note-header {
+                flex-direction: column;
+                gap: 10px;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Navbar -->
-    <nav class="navbar navbar-custom">
-        <div class="container-fluid" style="max-width: 1400px; margin: 0 auto;">
-            <span class="navbar-brand">Django REST framework 2</span>
-            <span class="navbar-text">admin</span>
+    <div class="main-container">
+        <!-- Header Section -->
+        <div class="header-section">
+            <h1><i class="fas fa-sticky-note"></i> Notes Manager</h1>
+            <p>Django REST Framework CRUD Application</p>
         </div>
-    </nav>
 
-    <!-- Breadcrumb -->
-    <div class="breadcrumb">
-        <div class="container-fluid" style="max-width: 1400px; margin: 0 auto;">
-            Note List
-        </div>
-    </div>
-
-    <!-- Main Content -->
-    <div class="content-wrapper">
-        <!-- Page Header -->
-        <div class="page-header">
-            <h1>Note List</h1>
-            <div class="btn-group-custom">
-                <button class="btn btn-primary" onclick="showOptions()">OPTIONS</button>
-                <div class="btn-group">
-                    <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown">
-                        GET
-                    </button>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="?format=json">json</a></li>
-                        <li><a class="dropdown-item" href="?format=api">api</a></li>
-                    </ul>
+        <!-- Stats Section -->
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="stat-icon primary">
+                    <i class="fas fa-list"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 id="totalNotes">{{ notes|length }}</h3>
+                    <p>Total Notes</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon success">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>Today</h3>
+                    <p>Recent Activity</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon info">
+                    <i class="fas fa-database"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>REST API</h3>
+                    <p>Backend Status</p>
                 </div>
             </div>
         </div>
 
-        <!-- Request Info -->
-        <div class="info-box">
-            <p><strong>GET</strong> /api/notes/</p>
-            <p><strong>HTTP 200 OK</strong></p>
-            <p>Allow: GET, POST, HEAD, OPTIONS</p>
-            <p>Content-Type: application/json</p>
-            <p>Vary: Accept</p>
-        </div>
-
-        <!-- Data Display -->
-        <div class="data-display">
-            <div class="nav-tabs-custom">
-                <ul class="nav nav-tabs" role="tablist">
-                    <li class="nav-item">
-                        <a class="nav-link active" data-bs-toggle="tab" href="#raw-data">Raw data</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" data-bs-toggle="tab" href="#html-form">HTML form</a>
-                    </li>
-                </ul>
+        <!-- Create Note Section -->
+        <div class="content-section">
+            <div class="section-title">
+                <h2><i class="fas fa-plus-circle"></i> Create New Note</h2>
             </div>
-            <div class="tab-content">
-                <div id="raw-data" class="tab-pane fade show active">
-                    <pre>{{ data|safe }}</pre>
-                </div>
-                <div id="html-form" class="tab-pane fade">
-                    <div style="padding: 20px;">
-                        <p class="text-muted">Use the form below to view data</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- POST Form -->
-        <div class="form-wrapper">
-            <form method="post" action="/api/notes/">
+            <form method="post" action="/" id="createForm">
                 {% csrf_token %}
-                <div class="mb-3 row">
-                    <label class="col-sm-2 col-form-label text-end">Title</label>
-                    <div class="col-sm-10">
-                        <input type="text" name="title" class="form-control" required>
-                    </div>
-                </div>
-                <div class="mb-3 row">
-                    <label class="col-sm-2 col-form-label text-end">Content</label>
-                    <div class="col-sm-10">
-                        <textarea name="content" class="form-control" rows="5" required></textarea>
-                    </div>
-                </div>
                 <div class="row">
-                    <div class="col-sm-10 offset-sm-2">
-                        <button type="submit" class="btn btn-primary px-4">POST</button>
+                    <div class="col-md-12 mb-3">
+                        <label class="form-label fw-bold">
+                            <i class="fas fa-heading"></i> Title
+                        </label>
+                        <input type="text" name="title" class="form-control" placeholder="Enter note title..." required>
+                    </div>
+                    <div class="col-md-12 mb-3">
+                        <label class="form-label fw-bold">
+                            <i class="fas fa-align-left"></i> Content
+                        </label>
+                        <textarea name="content" class="form-control" rows="4" placeholder="Write your note content here..." required></textarea>
+                    </div>
+                    <div class="col-md-12">
+                        <button type="submit" class="btn btn-custom btn-primary-custom">
+                            <i class="fas fa-save"></i> Create Note
+                        </button>
                     </div>
                 </div>
             </form>
+        </div>
+
+        <!-- Notes List Section -->
+        <div class="content-section">
+            <div class="section-title">
+                <h2><i class="fas fa-list-ul"></i> All Notes</h2>
+                <span class="badge bg-primary" style="font-size: 16px;">{{ notes|length }} Notes</span>
+            </div>
+            
+            <div id="notesList">
+                {% if notes %}
+                    {% for note in notes %}
+                    <div class="note-card" data-note-id="{{ note.id }}">
+                        <div class="note-header">
+                            <h3 class="note-title">{{ note.title }}</h3>
+                            <div class="note-actions">
+                                <button class="btn-sm-custom btn-edit" onclick="editNote({{ note.id }}, '{{ note.title|escapejs }}', '{{ note.content|escapejs }}')">
+                                    <i class="fas fa-edit"></i> Edit
+                                </button>
+                                <button class="btn-sm-custom btn-delete" onclick="deleteNote({{ note.id }})">
+                                    <i class="fas fa-trash"></i> Delete
+                                </button>
+                            </div>
+                        </div>
+                        <div class="note-content">
+                            {{ note.content }}
+                        </div>
+                        <div class="note-meta">
+                            <i class="far fa-calendar"></i>
+                            <span>Created: {{ note.created_at|date:"d M Y, H:i" }}</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state">
+                        <i class="fas fa-inbox"></i>
+                        <h3>No Notes Yet</h3>
+                        <p class="text-muted">Start by creating your first note above!</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div class="modal fade" id="editModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-edit"></i> Edit Note</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="editForm">
+                    <div class="modal-body">
+                        <input type="hidden" id="editNoteId">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Title</label>
+                            <input type="text" id="editTitle" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Content</label>
+                            <textarea id="editContent" class="form-control" rows="4" required></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-custom btn-primary-custom">
+                            <i class="fas fa-save"></i> Save Changes
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        function showOptions() {
-            alert('OPTIONS method shows available HTTP methods for this endpoint:\n\nGET, POST, HEAD, OPTIONS');
+        const editModal = new bootstrap.Modal(document.getElementById('editModal'));
+
+        function editNote(id, title, content) {
+            document.getElementById('editNoteId').value = id;
+            document.getElementById('editTitle').value = title;
+            document.getElementById('editContent').value = content;
+            editModal.show();
+        }
+
+        document.getElementById('editForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const id = document.getElementById('editNoteId').value;
+            const title = document.getElementById('editTitle').value;
+            const content = document.getElementById('editContent').value;
+            
+            try {
+                const response = await fetch(`/api/notes/${id}/`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                    body: JSON.stringify({ title, content })
+                });
+
+                if (response.ok) {
+                    location.reload();
+                } else {
+                    alert('Failed to update note');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred');
+            }
+        });
+
+        async function deleteNote(id) {
+            if (!confirm('Are you sure you want to delete this note?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/notes/${id}/`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRFToken': getCookie('csrftoken')
+                    }
+                });
+
+                if (response.ok) {
+                    location.reload();
+                } else {
+                    alert('Failed to delete note');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred');
+            }
+        }
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
         }
     </script>
 </body>
