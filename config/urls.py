@@ -24,11 +24,12 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
+    path('health/', health_check, name='health'),  # Healthcheck endpoint - FIRST!
+    path('test/', simple_test, name='test'),  # Simple test endpoint
     path('admin/', admin.site.urls),
     path('api/', include('notes.urls')),
-    path('health/', health_check, name='health'),  # Healthcheck endpoint
-    path('test/', simple_test, name='test'),  # Simple test endpoint
-    path('', note_list_html, name='home'),
+    path('notes/', note_list_html, name='home'),  # Pindah ke /notes/
+    path('', simple_test, name='root'),  # Root = simple test dulu
 ]
 
 if settings.DEBUG:
