@@ -1,10 +1,9 @@
-from django.urls import path, include
-from rest_framework.routers import DefaultRouter
-from .views import NoteViewSet, note_list_html
+from django.http import HttpResponse
+from django.urls import path
 
-router = DefaultRouter()
-router.register(r'notes', NoteViewSet, basename='note')
+def test(request):
+    return HttpResponse("OK DEPLOY BERHASIL")
 
 urlpatterns = [
-    path('', include(router.urls)),
+    path('', test),
 ]
