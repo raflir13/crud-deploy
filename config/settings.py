@@ -11,6 +11,8 @@ load_dotenv()
 # !
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+PORT = int(os.environ.get('PORT', 8080))
+
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-=5n_@jitucjlof!l5b$crv0vx8&omjlth8@lqbmdx%kfc^g0z0')
 
