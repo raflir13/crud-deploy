@@ -41,11 +41,19 @@ def note_list_html(request):
 
 def simple_test(request):
     """Test endpoint tanpa database"""
+    import logging
+    logger = logging.getLogger(__name__)
+    logger.info(f"=== SIMPLE TEST CALLED ===")
+    logger.info(f"Method: {request.method}")
+    logger.info(f"Path: {request.path}")
+    logger.info(f"Headers: {dict(request.headers)}")
+    
     return JsonResponse({
         'status': 'ok',
         'message': 'Django is running!',
         'method': request.method,
         'path': request.path,
+        'host': request.get_host(),
     })
 
 
