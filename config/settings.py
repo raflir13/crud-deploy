@@ -1,5 +1,5 @@
 """
-Django settings for config project - PythonAnywhere Ready
+Django settings for config project - Railway Ready (FIXED)
 """
 
 from pathlib import Path
@@ -8,7 +8,7 @@ import dj_database_url
 
 from dotenv import load_dotenv
 load_dotenv()
-# !
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 PORT = int(os.environ.get('PORT', 8080))
@@ -19,10 +19,19 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-=5n_@jitucjlof!l5b$cr
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
-# ALLOWED_HOSTS untuk PythonAnywhere
-ALLOWED_HOSTS = ["*"]
+# ALLOWED_HOSTS untuk Railway - CRITICAL FIX
+ALLOWED_HOSTS = ['*']  # Temporary untuk debug
 
-CSRF_TRUSTED_ORIGINS = ['https://crud-deploy-production-82cd.up.railway.app']
+# CSRF Settings - CRITICAL FIX untuk Railway proxy
+CSRF_TRUSTED_ORIGINS = [
+    'https://crud-deploy-production-82cd.up.railway.app',
+    'https://*.up.railway.app',
+    'https://*.railway.app',
+]
+
+# Disable CSRF temporarily untuk debug
+CSRF_COOKIE_SECURE = False
+SESSION_COOKIE_SECURE = False
 
 # Application definition
 INSTALLED_APPS = [
@@ -32,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',  # TAMBAH INI - PENTING!
     'notes',
 ]
 
@@ -66,37 +76,15 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
-# DB_LIVE = os.environ.get("DB_LIVE")
-
-# Database
-
+# Database - Gunakan DATABASE_URL langsung
 DATABASES = {
     'default': dj_database_url.config(
-        default=os.environ.get('DATABASE_URL'),
-        conn_max_age=600
+        default='postgresql://postgres:nIDcQxMFtWDeMAvHheKoGjGCLRedsqUb@shinkansen.proxy.rlwy.net:18411/railway',
+        conn_max_age=600,
+        conn_health_checks=True,
+        ssl_require=False,  # Railway internal network tidak butuh SSL
     )
 }
-
-# if DB_LIVE in ["False", False]:
-
-#     DATABASES = {
-#         'default': {
-#             'ENGINE': 'django.db.backends.sqlite3',
-#             'NAME': BASE_DIR / 'db.sqlite3',
-#         }
-#     }
-    
-# else:
-#     DATABASES = {
-#         'default': {
-#             'ENGINE': 'django.db.backends.postgresql',
-#             'NAME': os.environ.get("DB_NAME"),
-#             'USER': os.environ.get("DB_USER"),
-#             'PASSWORD': os.environ.get("DB_PASSWORD"),
-#             'HOST': os.environ.get("DB_HOST"),
-#             'PORT': os.environ.get("DB_PORT"),
-#         }
-#     }
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
@@ -121,11 +109,11 @@ USE_I18N = True
 USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
-# PENTING untuk PythonAnywhere
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+# Gunakan basic storage untuk avoid whitenoise issues
+STATICFILES_STORAGE = "django.contrib.staticfiles.storage.StaticFilesStorage"
 
 # Media files
 MEDIA_URL = '/media/'
@@ -140,5 +128,40 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 10,
     'DEFAULT_RENDERER_CLASSES': [
         'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',
     ]
+}
+
+# Logging untuk debug Railway - CRITICAL
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'INFO',
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'django.request': {
+            'handlers': ['console'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+    },
 }

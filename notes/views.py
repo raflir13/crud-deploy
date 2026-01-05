@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+from django.http import JsonResponse
 from rest_framework import viewsets
 from .models import Note
 from .serializers import NoteSerializer
@@ -32,3 +33,38 @@ def note_list_html(request):
     }
     
     return render(request, 'notes/note_list.html', context)
+
+
+def health_check(request):
+    """Healthcheck endpoint untuk Railway"""
+    import sys
+    try:
+        # Test database connection
+        from django.db import connection
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT 1")
+        
+        return JsonResponse({
+            'status': 'healthy',
+            'database': 'connected',
+            'python_version': sys.version,
+            'django_version': import_module('django').__version__,
+        })
+    except Exception as e:
+        import traceback
+        return JsonResponse({
+            'status': 'unhealthy',
+            'error': str(e),
+            'traceback': traceback.format_exc()
+        }, status=500)
+
+
+def simple_test(request):
+    """Test endpoint tanpa database"""
+    return JsonResponse({
+        'status': 'ok',
+        'message': 'Django is running!'
+    })
+
+
+from importlib import import_module

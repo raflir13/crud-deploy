@@ -14,16 +14,21 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+"""
+URL configuration for config project.
+"""
 from django.contrib import admin
 from django.urls import path, include
-from notes.views import note_list_html
+from notes.views import note_list_html, health_check, simple_test
 from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('notes.urls')),
-    path('', note_list_html, name='home'),  # Redirect root ke HTML view
+    path('health/', health_check, name='health'),  # Healthcheck endpoint
+    path('test/', simple_test, name='test'),  # Simple test endpoint
+    path('', note_list_html, name='home'),
 ]
 
 if settings.DEBUG:
