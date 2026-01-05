@@ -32,3 +32,6 @@ def note_list_html(request):
     }
     
     return render(request, 'notes/note_list.html', context)
+
+
+# kl
