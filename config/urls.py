@@ -18,7 +18,7 @@ Including another URLconf
 URL configuration for config project.
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 from django.views.generic import RedirectView
 from notes.views import note_list_html, health_check, simple_test
 from django.conf import settings
@@ -29,6 +29,7 @@ urlpatterns = [
     path('test/', simple_test, name='test'),
     path('admin/', admin.site.urls),
     path('notes/', note_list_html, name='notes'),
+    path('api/', include('profiles.urls')),  
     path('', RedirectView.as_view(url='/notes/', permanent=False), name='home'),
 ]
 
