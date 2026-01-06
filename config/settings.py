@@ -29,10 +29,6 @@ CSRF_TRUSTED_ORIGINS = [
     'https://*.railway.app',
 ]
 
-# Disable CSRF temporarily untuk debug
-CSRF_COOKIE_SECURE = False
-SESSION_COOKIE_SECURE = False
-
 # Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -50,7 +46,7 @@ MIDDLEWARE = [
     "whitenoise.middleware.WhiteNoiseMiddleware",
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    # 'django.middleware.csrf.CsrfViewMiddleware',  # TEMPORARY DISABLED
+    'django.middleware.csrf.CsrfViewMiddleware', 
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -76,13 +72,13 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
-# Database - Gunakan DATABASE_URL langsung
+# Database - Gunakan environment variable
 DATABASES = {
     'default': dj_database_url.config(
-        default='postgresql://postgres:nIDcQxMFtWDeMAvHheKoGjGCLRedsqUb@shinkansen.proxy.rlwy.net:18411/railway',
+        default=os.environ.get('DATABASE_URL'),
         conn_max_age=600,
         conn_health_checks=True,
-        ssl_require=False,  # Railway internal network tidak butuh SSL
+        ssl_require=False,
     )
 }
 
