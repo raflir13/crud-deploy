@@ -1,5 +1,6 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
+from django.views.decorators.http import require_http_methods
 from rest_framework import viewsets
 from .models import Note
 from .serializers import NoteSerializer
@@ -14,26 +15,49 @@ class NoteViewSet(viewsets.ModelViewSet):
     queryset = Note.objects.all()
     serializer_class = NoteSerializer
 
+class NoteViewSet(viewsets.ModelViewSet):
+    """API ViewSet untuk JSON responses"""
+    queryset = Note.objects.all()
+    serializer_class = NoteSerializer
+
 
 def note_list_html(request):
-    """Function view untuk HTML rendering"""
+    """Function view untuk HTML rendering dengan CRUD lengkap"""
+    
+    # Handle UPDATE via AJAX (PUT request simulation dengan POST + _method)
+    if request.method == 'POST' and request.POST.get('_method') == 'PUT':
+        note_id = request.POST.get('id')
+        note = get_object_or_404(Note, id=note_id)
+        note.title = request.POST.get('title')
+        note.content = request.POST.get('content')
+        note.save()
+        
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return JsonResponse({'status': 'success', 'message': 'Note updated'})
+        return redirect('notes')
+    
+    # Handle DELETE via AJAX (DELETE request simulation dengan POST + _method)
+    if request.method == 'POST' and request.POST.get('_method') == 'DELETE':
+        note_id = request.POST.get('id')
+        note = get_object_or_404(Note, id=note_id)
+        note.delete()
+        
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return JsonResponse({'status': 'success', 'message': 'Note deleted'})
+        return redirect('notes')
+    
+    # Handle CREATE (POST)
     if request.method == 'POST':
-        # Handle POST request
         title = request.POST.get('title')
         content = request.POST.get('content')
         Note.objects.create(title=title, content=content)
-        return redirect('home')
+        return redirect('notes')
     
-    # Get all notes
-    notes = Note.objects.all()
-    
-    # Serialize data untuk display
-    serializer = NoteSerializer(notes, many=True)
-    data_json = json.dumps(list(serializer.data), indent=4)
+    # Handle READ (GET)
+    notes = Note.objects.all().order_by('-created_at')
     
     context = {
         'notes': notes,
-        'data': data_json,
     }
     
     return render(request, 'notes/note_list.html', context)

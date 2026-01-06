@@ -18,18 +18,18 @@ Including another URLconf
 URL configuration for config project.
 """
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path
+from django.views.generic import RedirectView
 from notes.views import note_list_html, health_check, simple_test
 from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
-    path('health/', health_check, name='health'),  # Healthcheck endpoint - FIRST!
-    path('test/', simple_test, name='test'),  # Simple test endpoint
+    path('health/', health_check, name='health'),
+    path('test/', simple_test, name='test'),
     path('admin/', admin.site.urls),
-    path('api/', include('notes.urls')),
-    path('notes/', note_list_html, name='home'),  # Pindah ke /notes/
-    path('', simple_test, name='root'),  # Root = simple test dulu
+    path('notes/', note_list_html, name='notes'),
+    path('', RedirectView.as_view(url='/notes/', permanent=False), name='home'),
 ]
 
 if settings.DEBUG:
