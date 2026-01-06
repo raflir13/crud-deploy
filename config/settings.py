@@ -19,10 +19,16 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-=5n_@jitucjlof!l5b$cr
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
-# ALLOWED_HOSTS untuk Railway - CRITICAL FIX
-ALLOWED_HOSTS = ['*']  # Temporary untuk debug
+# ALLOWED_HOSTS untuk Railway
+ALLOWED_HOSTS = [
+    'localhost',
+    '127.0.0.1',
+    '.railway.app',
+    '.up.railway.app',
+    'crud-deploy-production-82cd.up.railway.app',
+] 
 
-# CSRF Settings - CRITICAL FIX untuk Railway proxy
+# CSRF Settings
 CSRF_TRUSTED_ORIGINS = [
     'https://crud-deploy-production-82cd.up.railway.app',
     'https://*.up.railway.app',
@@ -75,8 +81,9 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
+# Database Configuration
 if os.environ.get('DATABASE_URL'):
-    # Production: Gunakan PostgreSQL dari Railway
+    # Production: PostgreSQL dari Railway
     DATABASES = {
         'default': dj_database_url.config(
             default=os.environ.get('DATABASE_URL'),
@@ -86,7 +93,7 @@ if os.environ.get('DATABASE_URL'):
         )
     }
 else:
-    # Local Development: Gunakan SQLite
+    # Local Development: SQLite
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
@@ -119,13 +126,18 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-
-# Gunakan basic storage untuk avoid whitenoise issues
 STATICFILES_STORAGE = "django.contrib.staticfiles.storage.StaticFilesStorage"
 
 # Media files
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+# Cloudflare R2 Configuration (untuk upload avatar)
+R2_ENDPOINT_URL = os.environ.get('R2_ENDPOINT_URL', '')
+R2_ACCESS_KEY_ID = os.environ.get('R2_ACCESS_KEY_ID', '')
+R2_SECRET_ACCESS_KEY = os.environ.get('R2_SECRET_ACCESS_KEY', '')
+R2_BUCKET_NAME = os.environ.get('R2_BUCKET_NAME', '')
+R2_PUBLIC_URL = os.environ.get('R2_PUBLIC_URL', '')
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
@@ -140,7 +152,7 @@ REST_FRAMEWORK = {
     ]
 }
 
-# Logging untuk debug Railway - CRITICAL
+# Logging
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -174,7 +186,7 @@ LOGGING = {
     },
 }
 
-# CORS Settings (untuk frontend)
+# CORS Settings
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://localhost:5173",
